@@ -1,0 +1,17 @@
+# C++ compiled files
+*.o
+*.so
+*.dll
+
+# R profile files
+*.Rproj.user
+*.Rhistory
+
+# log files
+*.log
+
+# system files
+.directory
+
+# do not ignore the following files
+!.gitkeep
