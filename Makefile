@@ -2,36 +2,23 @@
 ## build data
 all: data
 
-# Define variables
-ifdef ComSpec
-	RM=del /F /Q
-	RMDIR=rmdir
-	PATHSEP2=\\
-	MV=MOVE
-else
-	RM=rm -f
-	RMDIR=rm -rf
-	PATHSEP2=/
-	MV=mv
-endif
-
 # Individual commands
 ## clean data
 clean:
-	@$(RM) exports/study-area-data.shp
-	@$(RM) exports/study-area-data.shx
-	@$(RM) exports/study-area-data.dbf
-	@$(RM) exports/study-area-data.prj
+	@rm -f exports/study-area.shp
+	@rm -f exports/study-area.shx
+	@rm -f exports/study-area.dbf
+	@rm -f exports/study-area.prj
 
 ## make data
 data:
 	@docker run --name=bba -w /tmp -dt 'brisbanebirdteam/build-env:latest' \
 	&& docker cp . bba:/tmp/ \
 	&& docker exec bba sh -c "Rscript code/make-data.R" \
-	&& docker cp bba:/tmp/exports/study-area-data.shp exports \
-	&& docker cp bba:/tmp/exports/study-area-data.shx exports \
-	&& docker cp bba:/tmp/exports/study-area-data.prj exports \
-	&& docker cp bba:/tmp/exports/study-area-data.dbf exports || true
+	&& docker cp bba:/tmp/exports/study-area.shp exports \
+	&& docker cp bba:/tmp/exports/study-area.shx exports \
+	&& docker cp bba:/tmp/exports/study-area.prj exports \
+	&& docker cp bba:/tmp/exports/study-area.dbf exports || true
 	@docker stop -t 1 bba || true && docker rm bba || true
 
 # docker container commands

@@ -100,13 +100,13 @@ raw_data <- sf::st_read(raw_path)
 ## clean spatial data
 raw_data <- raw_data %>%
             sf::st_transform(3857) %>%
+            sf::st_set_precision(1000) %>%
             lwgeom::st_make_valid() %>%
             sf::st_buffer(0) %>%
             lwgeom::st_snap_to_grid(1) %>%
-            sf::st_simplify(TRUE, 100) %>%
             filter(!sf::st_is_empty(.)) %>%
-            sf::st_collection_extract(type = "POLYGON") %>%
             lwgeom::st_make_valid() %>%
+            sf::st_collection_extract(type = "POLYGON") %>%
             filter(grepl("Queensland", STE_NAME16))
 
 # Main processing
@@ -116,7 +116,9 @@ land_data <- sf::st_union(raw_data)
 ## extract Brisbane data
 study_area_data <- raw_data %>%
                    filter(grepl("Brisbane", LGA_NAME16)) %>%
-                   sf::st_union()
+                   sf::st_union() %>%
+                   lwgeom::st_make_valid() %>%
+                   sf::st_collection_extract(type = "POLYGON")
 
 ## extract outside study area data
 outside_data <- study_area_data %>%
@@ -237,4 +239,4 @@ close_grid_data <- close_grid_data %>%
 ## save data set
 export_data <- sf::st_sf(name = c("land", "marine"),
                          geometry = append(study_area_data, close_grid_data))
-sf::st_write(export_data, "exports/study-area.shp", delete_dsn = TRUE)
+sf::write_sf(export_data, "exports/study-area.shp", delete_layer = TRUE)
