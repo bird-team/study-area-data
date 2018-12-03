@@ -235,6 +235,13 @@ close_grid_data <- close_grid_data %>%
                    sf::st_union() %>%
                    sf::st_difference(study_area_data)
 
+## remove overlapping areas from the marine geometry
+close_grid_data <- close_grid_data %>%
+                   sf::st_difference(study_area_data) %>%
+                   sf::st_set_precision(1000) %>%
+                   lwgeom::st_make_valid() %>%
+                   sf::st_collection_extract(type = "POLYGON")
+
 # Exports
 ## save data set
 export_data <- sf::st_sf(name = c("land", "marine"),
